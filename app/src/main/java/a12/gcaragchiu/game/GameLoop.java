@@ -1,5 +1,6 @@
 package a12.gcaragchiu.game;
 
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -99,6 +100,15 @@ public class GameLoop extends Thread {
                 frameCount = 0;
                 startTime = System.currentTimeMillis();
             }
+        }
+    }
+
+    public void stopLoop() {
+        isRunning = false;
+        try {
+            join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }
