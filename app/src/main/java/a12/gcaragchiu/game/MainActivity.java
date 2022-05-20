@@ -12,8 +12,6 @@ import android.view.WindowManager;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Game game;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,40 +25,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onPlayClicked(View view) {
-        game = new Game(this);
-        setContentView(new Game(this));
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        game.pause();
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public void onBackPressed() {
-        // commented out to prevent default action of onBackPressed
-        //super.onBackPressed();
+        startActivity(new Intent(MainActivity.this, GameActivity.class));
+        //game = new Game(this);
+        //setContentView(new Game(this));
     }
 }

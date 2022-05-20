@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">gameProject</string>
     <string name="start">Start</string>
+    <string name="play_again">Play Again</string>
+    <string name="game_title">DEAD RUN</string>
+    <string name="game_over_title">GAME OVER</string>
+    <string name="score_display">SCORE</string>
+    <string name="instructions">
+        Instructions: Use left joystick to move and tap to shoot!
+    </string>
 </resources>

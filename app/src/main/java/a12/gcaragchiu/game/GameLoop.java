@@ -1,11 +1,15 @@
 package a12.gcaragchiu.game;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
 import java.util.Observer;
+
+import a12.gcaragchiu.game.panel.Score;
 
 public class GameLoop extends Thread {
     public static final double MAX_UPS = 30.0;
@@ -13,14 +17,18 @@ public class GameLoop extends Thread {
 
     private Game game;
     private SurfaceHolder surfaceHolder;
+    private GameActivity gameActivity;
+    private Score score;
 
     private boolean isRunning = false;
     private double averageUPS;
     private double averageFPS;
 
-    public GameLoop(Game game, SurfaceHolder surfaceHolder) {
+    public GameLoop(Game game, SurfaceHolder surfaceHolder, GameActivity gameActivity, Score score) {
         this.game = game;
         this.surfaceHolder = surfaceHolder;
+        this.gameActivity = gameActivity;
+        this.score = score;
     }
 
     public double getAverageUPS() {
@@ -111,4 +119,13 @@ public class GameLoop extends Thread {
             e.printStackTrace();
         }
     }
+
+    public void endGame() {
+        Intent intent = new Intent(gameActivity, EndGameActivity.class);
+        intent.putExtra("score", String.valueOf(score.getTotalScore()));
+        gameActivity.startActivity(intent);
+        gameActivity.finish();
+
+    }
+
 }

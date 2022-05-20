@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
@@ -22,12 +23,15 @@ import a12.gcaragchiu.game.object.Enemy;
 import a12.gcaragchiu.game.object.Player;
 import a12.gcaragchiu.game.object.Spell;
 import a12.gcaragchiu.game.panel.Joystick;
+import a12.gcaragchiu.game.panel.Level;
 import a12.gcaragchiu.game.panel.Performance;
+import a12.gcaragchiu.game.panel.Score;
 
 //Will manage all objects and updates all states/renders all objects
 public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private final Player player;
     private final Joystick joystick;
+    private final Score score;
     private GameLoop gameLoop;
     private List<Enemy> enemyList = new ArrayList<Enemy>();
     private List<Spell> spellList = new ArrayList<Spell>();
@@ -36,18 +40,24 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private GameOver gameOver;
     private Performance performance;
     private GameDisplay gameDisplay;
+    private Context context;
+    //private Level level;
+
 
     public Game(Context context) {
         super(context);
 
+        score = new Score(context);
         SurfaceHolder surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
-        gameLoop = new GameLoop(this, surfaceHolder);
+        gameLoop = new GameLoop(this, surfaceHolder, (GameActivity)context, score);
+        gameOver = new GameOver(context);
 
         //initialize game panels
         performance = new Performance(context, gameLoop);
-        gameOver = new GameOver(context);
         joystick = new Joystick(275, 700, 70, 40);
+        //level = new Level(context);
+
 
         //initialize game objects
         player = new Player(context, joystick, 2*500, 500, 30);
@@ -98,7 +108,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
         if(gameLoop.getState().equals(Thread.State.TERMINATED)) {
-            gameLoop = new GameLoop(this, surfaceHolder);
+            gameLoop = new GameLoop(this, surfaceHolder, (GameActivity)context, score);
         }
         gameLoop.startLoop();
     }
@@ -119,8 +129,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         player.draw(canvas, gameDisplay);
 
-        player.draw(canvas, gameDisplay);
-
         for(Enemy enemy : enemyList) {
             enemy.draw(canvas, gameDisplay);
         }
@@ -131,6 +139,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         joystick.draw(canvas);
         performance.draw(canvas);
+        score.draw(canvas);
+        //level.draw(canvas);
 
         //death sequence
         if(player.getHealthPoints() <= 0) {
@@ -141,13 +151,16 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void update() {
         if(player.getHealthPoints() <= 0) {
             //endGame();
-            return;
+            gameLoop.endGame();
+            //return;
         }
         joystick.update();
         player.update();
         if(Enemy.readyToSpawn()) {
-            enemyList.add(new Enemy(getContext(), player));
+            Enemy enemy = new Enemy(getContext(), player);
+            enemyList.add(enemy);
         }
+
 
         while(numberOfSpellsToCast > 0) {
             spellList.add(new Spell(getContext(), player));
@@ -177,6 +190,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 if(Circle.isColliding(spell, enemy)) {
                     iteratorSpell.remove();
                     iteratorEnemy.remove();
+                    score.addPoints();
                     break;
                 }
             }
@@ -185,12 +199,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         gameDisplay.update();
     }
 
-//    private void endGame() {
-//        Intent intent = new Intent()
-//    }
-
-
     public void pause() {
         gameLoop.stopLoop();
     }
+
+
 }
